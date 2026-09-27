@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grievance Management Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fa-solid fa-shield-halved brand-icon"></i>
+            <span>Grievance Portal</span>
+        </div>
+        <div class="tech-badge">
+            <i class="fa-brands fa-c"></i> C++ Engine Powered
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        
+        <!-- Left Side: Form Section -->
+        <div class="card form-card">
+            <div class="card-header">
+                <h2><i class="fa-solid fa-pen-to-square"></i> Submit a Grievance</h2>
+                <p>Fill in the details below to log your issue</p>
+            </div>
+            
+            <form id="complaintForm">
+                <div class="input-group">
+                    <label for="title"><i class="fa-solid fa-heading"></i> Title</label>
+                    <input type="text" id="title" name="title" placeholder="e.g. Hostel Wi-Fi issue" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="category"><i class="fa-solid fa-layer-group"></i> Category</label>
+                    <select id="category" name="category" required>
+                        <option value="" disabled selected>Select Category</option>
+                        <option value="Hostel">Hostel</option>
+                        <option value="Academics">Academics</option>
+                        <option value="Infrastructure">Infrastructure</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="description"><i class="fa-solid fa-align-left"></i> Description</label>
+                    <textarea id="description" name="description" placeholder="Provide complete details about your grievance..." required></textarea>
+                </div>
+
+                <button type="submit" id="submitBtn">
+                    <i class="fa-solid fa-paper-plane"></i> Submit Grievance
+                </button>
+            </form>
+        </div>
+
+        <!-- Right Side: Recent Complaints Section -->
+        <div class="card list-card">
+            <div class="card-header">
+                <h2><i class="fa-solid fa-list-check"></i> Recent Grievances</h2>
+                <p>Live status of reported issues</p>
+            </div>
+
+            <div id="complaintList" class="complaint-grid">
+                <!-- Dynamically loaded cards from JS -->
+            </div>
+        </div>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
