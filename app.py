@@ -17,9 +17,9 @@ def submit_complaint():
     if not title or not category or not description:
         return jsonify({'status': 'error', 'message': 'All fields are required!'})
 
-    # main.exe का पूरा रास्ता (Absolute Path) निकालें
-    exe_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'main.exe')
-
+    # main.exe (Absolute Path) निकालें
+    exe_name = 'main.exe' if os.name == 'nt' else './main'
+    exe_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), exe_name)
     try:
         # C++ exe को एग्जीक्यूट करें
         result = subprocess.run(
