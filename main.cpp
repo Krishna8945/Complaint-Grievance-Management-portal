@@ -5,9 +5,9 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    // Arguments: main title category description [status]
+    // Expected arguments: main.exe "Title" "Category" "Description" "Status" "ImageName"
     if (argc < 4) {
-        cout << "Error: Invalid Arguments" << endl;
+        cout << "Error: Missing required arguments" << endl;
         return 1;
     }
 
@@ -15,11 +15,12 @@ int main(int argc, char* argv[]) {
     string category = argv[2];
     string description = argv[3];
     string status = (argc >= 5) ? argv[4] : "Pending";
+    string image = (argc >= 6) ? argv[5] : "";
 
-    // Open file in append mode
+    // Save to complaints.txt in Append Mode
     ofstream file("complaints.txt", ios::app);
     if (file.is_open()) {
-        file << title << " | " << category << " | " << description << " | " << status << endl;
+        file << title << " | " << category << " | " << description << " | " << status << " | " << image << endl;
         file.close();
         cout << "Success" << endl;
     } else {

@@ -3,113 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grievance Management Portal</title>
+    <title>Campus Grievance & Resolution Portal</title>
+    <!-- CSS File Link -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="navbar">
-        <h2>🛡️ Grievance Portal</h2>
-        <span class="engine-tag">C++ Engine Powered</span>
-    </div>
-
-    <div class="container">
-        <!-- Submit Complaint Card -->
-        <div class="card">
-            <h3>📝 Submit a Grievance</h3>
-            <p class="subtitle">Fill in the details below to log your issue</p>
-
-            <form id="grievanceForm">
-                <div class="form-group">
-                    <label>Title</label>
-                    <input type="text" id="title" placeholder="e.g. Hostel Wi-Fi Issue" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Category</label>
-                    <select id="category" required>
-                        <option value="Hostel">Hostel</option>
-                        <option value="Academics">Academics</option>
-                        <option value="Infrastructure">Infrastructure</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Description</label>
-                    <textarea id="description" rows="4" placeholder="Provide complete details..." required></textarea>
-                </div>
-
-                <button type="submit" class="btn">🚀 Submit Grievance</button>
-            </form>
-        </div>
-
-        <!-- Complaints List Card -->
-        <div class="card">
-            <h3>📑 Recent Grievances</h3>
-            <p class="subtitle">Live status of reported issues</p>
-            <div id="complaintsList" class="complaints-container">
-                <p>Loading grievances...</p>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="nav-brand">
+            <span class="logo-icon">🛡️</span>
+            <div>
+                <h1>Campus Grievance Portal</h1>
+                <p class="tagline">Official NMIET Student Resolution Desk</p>
             </div>
         </div>
-    </div>
+        <div class="nav-actions">
+            <span class="engine-badge">⚡ C++ High-Performance Backend</span>
+        </div>
+    </header>
 
-    <script>
-        // Fetch and display complaints
-        async function loadComplaints() {
-            try {
-                const res = await fetch('/get_complaints');
-                const data = await res.json();
-                const list = document.getElementById('complaintsList');
-                list.innerHTML = '';
+    <main class="dashboard-container">
+        <!-- Top Stats Banner -->
+        <section class="stats-grid">
+            <div class="stat-card blue">
+                <div class="stat-info">
+                    <h4>Total Registered</h4>
+                    <p id="totalCount">0</p>
+                </div>
+                <span class="stat-icon">📊</span>
+            </div>
+            <div class="stat-card yellow">
+                <div class="stat-info">
+                    <h4>Pending Issues</h4>
+                    <p id="pendingCount">0</p>
+                </div>
+                <span class="stat-icon">⏳</span>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-info">
+                    <h4>Resolved Cases</h4>
+                    <p id="resolvedCount">0</p>
+                </div>
+                <span class="stat-icon">✅</span>
+            </div>
+        </section>
 
-                if (data.length === 0) {
-                    list.innerHTML = '<p class="empty-msg">No grievances submitted yet.</p>';
-                    return;
-                }
+        <!-- Main Content Area -->
+        <div class="main-grid">
+            <!-- Left Panel: Submission Form -->
+            <section class="card form-card">
+                <div class="card-header">
+                    <h3>📝 File a New Grievance</h3>
+                    <p>Submit your concern directly to the student portal</p>
+                </div>
 
-                data.reverse().forEach(item => {
-                    const statusClass = (item.status || 'Pending').toLowerCase().replace(' ', '-');
-                    const div = document.createElement('div');
-                    div.className = 'complaint-item';
-                    div.innerHTML = `
-                        <div class="item-header">
-                            <h4>${item.title}</h4>
-                            <span class="badge category-badge">${item.category}</span>
+                <form id="grievanceForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label>Grievance Title</label>
+                        <input type="text" name="title" id="title" placeholder="e.g. Wi-Fi Not Working in Hostel Block B" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select name="category" id="category" onchange="handleCategoryChange()" required>
+                                <option value="Hostel">Hostel & Mess</option>
+                                <option value="Academics">Academics & Exams</option>
+                                <option value="Infrastructure">Infrastructure & Labs</option>
+                                <option value="Other">Other Issues</option>
+                            </select>
                         </div>
-                        <p class="desc">${item.description}</p>
-                        <div class="item-footer">
-                            <span class="badge status-badge ${statusClass}">● ${item.status || 'Pending'}</span>
+
+                        <div class="form-group">
+                            <label>Attach Photo (Evidence)</label>
+                            <input type="file" name="image" id="image" accept="image/*" class="file-input">
                         </div>
-                    `;
-                    list.appendChild(div);
-                });
-            } catch (err) {
-                console.error("Error loading complaints:", err);
-            }
-        }
+                    </div>
 
-        // Form Submit
-        document.getElementById('grievanceForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData();
-            formData.append('title', document.getElementById('title').value);
-            formData.append('category', document.getElementById('category').value);
-            formData.append('description', document.getElementById('description').value);
+                    <!-- Dynamic Google Form Redirect Box -->
+                    <div id="gformBox" class="gform-card">
+                        <div class="gform-text">
+                            <strong>📋 Alternate Google Form Submission</strong>
+                            <p id="gformDesc">Prefer filing via official Hostel Google Form?</p>
+                        </div>
+                        <a id="gformBtn" href="https://forms.google.com" target="_blank" class="gform-btn">Open Form ↗</a>
+                    </div>
 
-            const res = await fetch('/submit', { method: 'POST', body: formData });
-            const result = await res.json();
+                    <div class="form-group">
+                        <label>Detailed Description</label>
+                        <textarea name="description" id="description" rows="4" placeholder="Provide full details, location, and specific issues..." required></textarea>
+                    </div>
 
-            if (result.status === 'success') {
-                alert('Grievance Submitted Successfully!');
-                document.getElementById('grievanceForm').reset();
-                loadComplaints();
-            } else {
-                alert('Error: ' + result.message);
-            }
-        });
+                    <button type="submit" class="submit-btn">🚀 Submit Grievance Record</button>
+                </form>
+            </section>
 
-        loadComplaints();
-    </script>
+            <!-- Right Panel: Grievances Live Feed -->
+            <section class="card feed-card">
+                <div class="card-header flex-header">
+                    <div>
+                        <h3>📑 Live Grievance Feed</h3>
+                        <p>Real-time status updates</p>
+                    </div>
+                    <!-- Search & Filter Control -->
+                    <div class="filter-controls">
+                        <input type="text" id="searchInput" onkeyup="filterFeed()" placeholder="🔍 Search complaints...">
+                    </div>
+                </div>
+
+                <div id="complaintsList" class="feed-list">
+                    <p class="loading-text">Fetching live records...</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- JS File Link -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
