@@ -5,41 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grievance Management Portal</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="navbar">
+        <h2>🛡️ Grievance Portal</h2>
+        <span class="engine-tag">C++ Engine Powered</span>
+    </div>
 
-    <!-- Top Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-brand">
-            <i class="fa-solid fa-shield-halved brand-icon"></i>
-            <span>Grievance Portal</span>
-        </div>
-        <div class="tech-badge">
-            <i class="fa-brands fa-c"></i> C++ Engine Powered
-        </div>
-    </nav>
+    <div class="container">
+        <!-- Submit Complaint Card -->
+        <div class="card">
+            <h3>📝 Submit a Grievance</h3>
+            <p class="subtitle">Fill in the details below to log your issue</p>
 
-    <div class="dashboard-container">
-        
-        <!-- Left Side: Form Section -->
-        <div class="card form-card">
-            <div class="card-header">
-                <h2><i class="fa-solid fa-pen-to-square"></i> Submit a Grievance</h2>
-                <p>Fill in the details below to log your issue</p>
-            </div>
-            
-            <form id="complaintForm">
-                <div class="input-group">
-                    <label for="title"><i class="fa-solid fa-heading"></i> Title</label>
-                    <input type="text" id="title" name="title" placeholder="e.g. Hostel Wi-Fi issue" required>
+            <form id="grievanceForm">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="title" placeholder="e.g. Hostel Wi-Fi Issue" required>
                 </div>
 
-                <div class="input-group">
-                    <label for="category"><i class="fa-solid fa-layer-group"></i> Category</label>
-                    <select id="category" name="category" required>
-                        <option value="" disabled selected>Select Category</option>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="category" required>
                         <option value="Hostel">Hostel</option>
                         <option value="Academics">Academics</option>
                         <option value="Infrastructure">Infrastructure</option>
@@ -47,31 +35,81 @@
                     </select>
                 </div>
 
-                <div class="input-group">
-                    <label for="description"><i class="fa-solid fa-align-left"></i> Description</label>
-                    <textarea id="description" name="description" placeholder="Provide complete details about your grievance..." required></textarea>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="description" rows="4" placeholder="Provide complete details..." required></textarea>
                 </div>
 
-                <button type="submit" id="submitBtn">
-                    <i class="fa-solid fa-paper-plane"></i> Submit Grievance
-                </button>
+                <button type="submit" class="btn">🚀 Submit Grievance</button>
             </form>
         </div>
 
-        <!-- Right Side: Recent Complaints Section -->
-        <div class="card list-card">
-            <div class="card-header">
-                <h2><i class="fa-solid fa-list-check"></i> Recent Grievances</h2>
-                <p>Live status of reported issues</p>
-            </div>
-
-            <div id="complaintList" class="complaint-grid">
-                <!-- Dynamically loaded cards from JS -->
+        <!-- Complaints List Card -->
+        <div class="card">
+            <h3>📑 Recent Grievances</h3>
+            <p class="subtitle">Live status of reported issues</p>
+            <div id="complaintsList" class="complaints-container">
+                <p>Loading grievances...</p>
             </div>
         </div>
-
     </div>
 
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        // Fetch and display complaints
+        async function loadComplaints() {
+            try {
+                const res = await fetch('/get_complaints');
+                const data = await res.json();
+                const list = document.getElementById('complaintsList');
+                list.innerHTML = '';
+
+                if (data.length === 0) {
+                    list.innerHTML = '<p class="empty-msg">No grievances submitted yet.</p>';
+                    return;
+                }
+
+                data.reverse().forEach(item => {
+                    const statusClass = (item.status || 'Pending').toLowerCase().replace(' ', '-');
+                    const div = document.createElement('div');
+                    div.className = 'complaint-item';
+                    div.innerHTML = `
+                        <div class="item-header">
+                            <h4>${item.title}</h4>
+                            <span class="badge category-badge">${item.category}</span>
+                        </div>
+                        <p class="desc">${item.description}</p>
+                        <div class="item-footer">
+                            <span class="badge status-badge ${statusClass}">● ${item.status || 'Pending'}</span>
+                        </div>
+                    `;
+                    list.appendChild(div);
+                });
+            } catch (err) {
+                console.error("Error loading complaints:", err);
+            }
+        }
+
+        // Form Submit
+        document.getElementById('grievanceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('title', document.getElementById('title').value);
+            formData.append('category', document.getElementById('category').value);
+            formData.append('description', document.getElementById('description').value);
+
+            const res = await fetch('/submit', { method: 'POST', body: formData });
+            const result = await res.json();
+
+            if (result.status === 'success') {
+                alert('Grievance Submitted Successfully!');
+                document.getElementById('grievanceForm').reset();
+                loadComplaints();
+            } else {
+                alert('Error: ' + result.message);
+            }
+        });
+
+        loadComplaints();
+    </script>
 </body>
 </html>

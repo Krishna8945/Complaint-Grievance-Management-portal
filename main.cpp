@@ -4,30 +4,28 @@
 
 using namespace std;
 
-class ComplaintManager {
-public:
-    void saveComplaint(const string& title, const string& category, const string& desc) {
-        ofstream file("complaints.txt", ios::app);
-        if (file.is_open()) {
-            file << title << " | " << category << " | " << desc << "\n";
-            file.close();
-            cout << "SUCCESS";
-        } else {
-            cout << "ERROR";
-        }
-    }
-};
-
 int main(int argc, char* argv[]) {
-    if (argc >= 4) {
-        string title = argv[1];
-        string category = argv[2];
-        string desc = argv[3];
-
-        ComplaintManager manager;
-        manager.saveComplaint(title, category, desc);
-    } else {
-        cout << "Invalid Arguments";
+    // Arguments: main title category description [status]
+    if (argc < 4) {
+        cout << "Error: Invalid Arguments" << endl;
+        return 1;
     }
+
+    string title = argv[1];
+    string category = argv[2];
+    string description = argv[3];
+    string status = (argc >= 5) ? argv[4] : "Pending";
+
+    // Open file in append mode
+    ofstream file("complaints.txt", ios::app);
+    if (file.is_open()) {
+        file << title << " | " << category << " | " << description << " | " << status << endl;
+        file.close();
+        cout << "Success" << endl;
+    } else {
+        cout << "Error: Unable to open file" << endl;
+        return 1;
+    }
+
     return 0;
 }
